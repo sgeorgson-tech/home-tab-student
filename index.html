@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Learning Suite</title>
+<title>Home Page</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
@@ -148,19 +148,78 @@
   .tile:hover .tip,.tile:focus-visible .tip{opacity:1; transform:translate(-50%,0);}
 
   /* ---------- waffle ---------- */
-  .waffle-wrap{position:fixed; top:20px; right:20px; z-index:20;}
-  .waffle-btn{
-    width:40px; height:40px; border:0; border-radius:999px;
-    background:rgba(255,255,255,.78);
-    -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px);
-    box-shadow:0 2px 10px rgba(10,14,20,.18);
-    cursor:pointer; display:flex; align-items:center; justify-content:center;
-    transition:background 140ms ease;
+  /* ---- top bar: Images link, waffle, account (pinned top-right) ---- */
+  .topbar{
+    position:fixed; top:20px; right:20px; z-index:20;
+    display:flex; align-items:center; gap:6px;
   }
-  .waffle-btn:hover{background:#fff;}
+  .topbar .tlink{
+    font-size:13px; font-weight:500; letter-spacing:.005em;
+    padding:8px 14px; border-radius:999px; white-space:nowrap;
+    background:transparent;
+    border:1.6px solid rgba(95,104,117,.5);
+    color:rgba(95,104,117,.95);
+    transition:background 140ms ease, border-color 140ms ease, color 140ms ease;
+  }
+  .topbar .tlink:hover{
+    background:rgba(255,255,255,.4);
+    border-color:rgba(95,104,117,.8); color:#3D4552;
+  }
+  .topbar .tlink:focus-visible{outline:none; box-shadow:0 0 0 3px rgba(143,176,224,.6);}
+  body.photo .topbar .tlink{
+    border-color:rgba(255,255,255,.75); color:rgba(255,255,255,.95);
+  }
+  body.photo .topbar .tlink:hover{
+    background:rgba(255,255,255,.2); border-color:#fff; color:#fff;
+  }
+  /* outlined avatar: gray rim, gray glyph, transparent interior */
+  .acct{
+    width:38px; height:38px; border-radius:50%; flex:0 0 auto;
+    background:transparent;
+    border:1.6px solid rgba(95,104,117,.5);
+    color:rgba(95,104,117,.85);
+    display:flex; align-items:center; justify-content:center;
+    transition:background 140ms ease, border-color 140ms ease, color 140ms ease;
+  }
+  .acct:hover{
+    background:rgba(255,255,255,.4);
+    border-color:rgba(95,104,117,.8);
+    color:#3D4552;
+  }
+  .acct:focus-visible{outline:none; box-shadow:0 0 0 3px rgba(143,176,224,.6);}
+  .acct svg{width:19px; height:19px; display:block;}
+  /* over a photo, switch the rim and glyph to white so it stays legible */
+  body.photo .acct{
+    border-color:rgba(255,255,255,.75);
+    color:rgba(255,255,255,.92);
+  }
+  body.photo .acct:hover{
+    background:rgba(255,255,255,.2);
+    border-color:#fff; color:#fff;
+  }
+
+  .waffle-wrap{position:relative; z-index:20;}
+  .waffle-btn{
+    width:38px; height:38px; border-radius:50%;
+    background:transparent;
+    border:1.6px solid rgba(95,104,117,.5);
+    color:rgba(95,104,117,.9);
+    cursor:pointer; display:flex; align-items:center; justify-content:center;
+    transition:background 140ms ease, border-color 140ms ease, color 140ms ease;
+  }
+  .waffle-btn:hover{
+    background:rgba(255,255,255,.4);
+    border-color:rgba(95,104,117,.8); color:#3D4552;
+  }
+  body.photo .waffle-btn{
+    border-color:rgba(255,255,255,.75); color:rgba(255,255,255,.92);
+  }
+  body.photo .waffle-btn:hover{
+    background:rgba(255,255,255,.2); border-color:#fff; color:#fff;
+  }
   .waffle-btn:focus-visible{outline:none; box-shadow:0 0 0 3px rgba(143,176,224,.6);}
-  .waffle-dots{display:grid; grid-template-columns:repeat(3,4px); gap:3px;}
-  .waffle-dots span{width:4px; height:4px; border-radius:50%; background:#5F6875;}
+  .waffle-dots{display:grid; grid-template-columns:repeat(3,3.6px); gap:2.8px;}
+  .waffle-dots span{width:3.6px; height:3.6px; border-radius:50%; background:currentColor;}
   .waffle-panel{
     position:absolute; top:50px; right:0;
     background:#fff; border:1px solid var(--line); border-radius:18px;
@@ -226,17 +285,26 @@
   .cust-wrap{position:fixed; bottom:20px; right:20px; z-index:25; display:none;}
   .cust-wrap.on{display:block;}
   .cust-btn{
-    width:40px; height:40px; border:0; border-radius:50%; cursor:pointer;
-    background:rgba(255,255,255,.80);
-    -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px);
-    box-shadow:0 2px 10px rgba(10,14,20,.18);
+    width:38px; height:38px; border-radius:50%; cursor:pointer;
+    background:transparent;
+    border:1.6px solid rgba(95,104,117,.5);
+    color:rgba(95,104,117,.9);
     display:flex; align-items:center; justify-content:center;
-    transition:background 140ms ease;
+    transition:background 140ms ease, border-color 140ms ease, color 140ms ease;
   }
-  .cust-btn:hover{background:#fff;}
+  .cust-btn:hover{
+    background:rgba(255,255,255,.4);
+    border-color:rgba(95,104,117,.8); color:#3D4552;
+  }
   .cust-btn:focus-visible{outline:none; box-shadow:0 0 0 3px rgba(143,176,224,.6);}
-  .cust-btn svg{width:19px; height:19px; fill:none; stroke:#5F6875; stroke-width:1.9;
+  .cust-btn svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.9;
     stroke-linecap:round; stroke-linejoin:round;}
+  body.photo .cust-btn{
+    border-color:rgba(255,255,255,.75); color:rgba(255,255,255,.92);
+  }
+  body.photo .cust-btn:hover{
+    background:rgba(255,255,255,.2); border-color:#fff; color:#fff;
+  }
   .cust-panel{
     position:absolute; bottom:50px; right:0; width:216px;
     background:#fff; border:1px solid var(--line); border-radius:16px;
@@ -262,6 +330,7 @@
   }
   .cust-opt.sel .chk{border-color:var(--accent); background:var(--accent);}
   .cust-opt.sel .chk::after{content:""; width:5px; height:5px; border-radius:50%; background:#fff;}
+  .cust-rule{height:1px; background:var(--line); margin:6px 11px;}
 
   /* waffle icon fallback when a favicon can't load */
   .wfallback{
@@ -285,6 +354,19 @@
   .divider{width:1px; height:22px; background:var(--line); flex:0 0 auto;}
   body.photo .foot{color:rgba(255,255,255,.9); text-shadow:0 1px 8px rgba(8,12,18,.6);}
 
+  /* on narrower windows the fixed corner controls would run into the
+     centered crest, so give the content room to clear them */
+  @media (max-width:760px){
+    body{padding-top:96px;}
+    .topbar{top:14px; right:14px; gap:4px;}
+    .topbar .tlink{font-size:12px; padding:6px 10px;}
+    .weather{top:14px; left:14px; padding:7px 12px 7px 11px;}
+    .wx-time{font-size:15px;}
+  }
+  @media (max-width:560px){
+    body{padding-top:110px;}
+    .topbar .tlink{display:none;}   /* Images link folds away; waffle + account remain */
+  }
   @media (max-width:620px){ .board{grid-template-columns:repeat(4,1fr);} }
   @media (max-width:400px){ .board{grid-template-columns:repeat(3,1fr);} }
   @media (prefers-reduced-motion:reduce){ *{transition:none !important;} }
@@ -316,13 +398,19 @@
     <div class="waffle-panel" id="wafflePanel" role="menu"></div>
     </div>
     <a class="acct" href="https://myaccount.google.com" aria-label="Your Google account" title="Your account">
-      <svg viewBox="0 0 24 24" fill="#5F6875"><circle cx="12" cy="8.2" r="3.8"/><path d="M12 13.4c-4 0-7 2.3-7 4.6V20h14v-2c0-2.3-3-4.6-7-4.6z"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="9.2" r="3.3"/><path d="M5.8 19.6a6.4 6.4 0 0 1 12.4 0"/></svg>
     </a>
   </div>
 
   <div class="mast">
-    <img class="crest" id="crest" alt="St. Paul's Lutheran School, Muskego">
+    <img class="crest" id="crest" alt="St. Paul's Lutheran School, Muskego"
+         src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3C/svg%3E">
     <p class="school">St. Paul&#8217;s Lutheran &middot; Muskego</p>
+  </div>
+
+  <div class="announce" id="announce">
+    <span class="an-dot"></span>
+    <span class="an-tx" id="announceText"></span>
   </div>
 
   <div class="search-wrap">
@@ -360,9 +448,13 @@
     </button>
     <div class="cust-panel" id="custPanel" role="menu">
       <div class="cust-head">Background</div>
-      <button class="cust-opt" data-mode="rotate" role="menuitem"><span class="chk"></span>New photo each day</button>
-      <button class="cust-opt" data-mode="lock"   role="menuitem"><span class="chk"></span>Keep this one</button>
-      <button class="cust-opt" data-mode="plain"  role="menuitem"><span class="chk"></span>No photo</button>
+      <div id="photoOpts">
+        <button class="cust-opt" data-mode="rotate" role="menuitem"><span class="chk"></span>New photo each day</button>
+        <button class="cust-opt" data-mode="lock"   role="menuitem"><span class="chk"></span>Keep this photo</button>
+        <div class="cust-rule"></div>
+      </div>
+      <button class="cust-opt" data-mode="white" role="menuitem"><span class="chk"></span>White</button>
+      <button class="cust-opt" data-mode="gray"  role="menuitem"><span class="chk"></span>Gray</button>
     </div>
   </div>
 
@@ -473,8 +565,12 @@
      If a photo is missing or BG_COUNT is 0, the page just shows its
      clean light background -- it never looks broken.
      ------------------------------------------------------------ */
-  const BG_COUNT = 115;          // <-- set to how many photos are in bg/
+  const BG_COUNT = 0;          // <-- set to how many photos are in bg/
   const BG_EXT   = "jpg";      // change to "png" if yours are PNGs
+
+  /* The two plain choices. Tweak these hex values if you want a
+     different flat background. */
+  const PLAIN = { white:"#FFFFFF", gray:"#F1F3F4" };
 
   (function(){
     const wrap  = document.getElementById("custWrap");
@@ -482,14 +578,25 @@
     const panel = document.getElementById("custPanel");
     const bgEl  = document.getElementById("bg");
     const scrim = document.getElementById("scrim");
+    const photoOpts = document.getElementById("photoOpts");
 
-    if (BG_COUNT < 1) return;      // no photos yet: hide the control entirely
+    /* the control is always available -- White/Gray work with or
+       without photos. The two photo choices only appear once you've
+       added a bg/ folder and set BG_COUNT. */
     wrap.classList.add("on");
+    const hasPhotos = BG_COUNT >= 1;
+    if (!hasPhotos) photoOpts.style.display = "none";
 
-    /* remembers each student's own choice on their own device */
     function pref(){
-      try{ return JSON.parse(localStorage.getItem("bgPref")||"null") || {mode:"rotate"}; }
-      catch(e){ return {mode:"rotate"}; }
+      try{
+        const p = JSON.parse(localStorage.getItem("bgPref")||"null");
+        if (p && p.mode) {
+          /* if photos went away, fall back to a plain mode */
+          if (!hasPhotos && (p.mode==="rotate" || p.mode==="lock")) return {mode:"white"};
+          return p;
+        }
+      }catch(e){}
+      return { mode: hasPhotos ? "rotate" : "white" };
     }
     function save(p){ try{ localStorage.setItem("bgPref", JSON.stringify(p)); }catch(e){} }
 
@@ -499,12 +606,17 @@
     }
     function fileFor(n){ return "bg/"+String(n).padStart(2,"0")+"."+BG_EXT; }
 
+    function goPlain(hex){
+      bgEl.classList.remove("on"); scrim.classList.remove("on");
+      document.body.classList.remove("photo");
+      document.body.style.background = hex;
+      bgEl.style.background = hex;
+    }
+
     function paint(){
       const p = pref();
-      if (p.mode === "plain"){
-        bgEl.classList.remove("on"); scrim.classList.remove("on");
-        document.body.classList.remove("photo");
-        mark(); return;
+      if (p.mode === "white" || p.mode === "gray"){
+        goPlain(PLAIN[p.mode]); mark(); return;
       }
       const n = (p.mode === "lock" && p.n) ? p.n : todaysNumber();
       const url = fileFor(n);
@@ -514,10 +626,7 @@
         bgEl.classList.add("on"); scrim.classList.add("on");
         document.body.classList.add("photo");
       };
-      pre.onerror = function(){
-        bgEl.classList.remove("on"); scrim.classList.remove("on");
-        document.body.classList.remove("photo");
-      };
+      pre.onerror = function(){ goPlain(PLAIN.white); };
       pre.src = url;
       mark();
     }
@@ -531,8 +640,8 @@
       b.addEventListener("click", e => {
         e.stopPropagation();
         const mode = b.dataset.mode;
-        /* "Keep this one" pins whatever is showing right now */
         if (mode === "lock"){
+          /* pins whatever photo is showing right now */
           const cur = pref();
           const n = (cur.mode === "lock" && cur.n) ? cur.n : todaysNumber();
           save({mode:"lock", n:n});
@@ -555,6 +664,7 @@
 
     paint();
   })();
+
 
 
   /* ---- app suggestions ------------------------------------------
