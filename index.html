@@ -374,7 +374,7 @@
 </head>
 <body>
 
-  <a class="weather" id="weather" href="https://forecast.weather.gov/MapClick.php?lat=42.9111&amp;lon=-88.1287" aria-label="Time, date, and local forecast">
+  <a class="weather" id="weather" href="https://weather.com/weather/today/l/53150" aria-label="Time, date, and local forecast">
     <span class="wx-date">
       <span class="wx-time" id="wxTime"></span>
       <span class="wx-day" id="wxDay"></span>
@@ -390,7 +390,7 @@
   <div class="bg-scrim" id="scrim"></div>
 
   <div class="topbar">
-    <a class="tlink" href="https://www.google.com/imghp?safe=active">Images</a>
+    <a class="tlink" id="imgLink" href="https://www.google.com/imghp?safe=active">Images</a>
     <div class="waffle-wrap">
     <button class="waffle-btn" id="waffleBtn" aria-label="Google apps" aria-expanded="false">
       <span class="waffle-dots"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span>
@@ -484,12 +484,12 @@
     { name:"Classroom", sub:"Assignments", url:"https://classroom.google.com", icon:"classroom" },
     { name:"Gmail", sub:"School email", url:"https://mail.google.com", icon:"gmail" },
     { name:"Flint", sub:"AI assistant, grades 6-8", url:"https://app.flintk12.com", icon:"flint" },
-    { name:"Accelerated Reader", sub:"Reading quizzes", url:"https://www.renaissance.com/product-login/", icon:"ar" },
+    { name:"Accelerated Reader", sub:"Reading quizzes", url:"https://login.renaissance.com/10958527-40c1-42ae-9f0c-44aec2ec0bf3", icon:"ar" },
     { name:"BadgerLink", sub:"Wisconsin's library resources", url:"https://badgerlink.dpi.wi.gov", icon:"badgerlink" },
     { name:"Britannica School", sub:"Encyclopedia you can cite", url:"https://school.eb.com/levels", icon:"britannica" },
     { name:"Typing.com", sub:"Practice typing", url:"https://www.typing.com", icon:"typing" },
     { name:"Canva", sub:"Design & create", url:"https://www.canva.com", icon:"canva" },
-    { name:"Games", sub:"When you're done", url:"https://stp-muskego.github.io/", icon:"games" }
+    { name:"Games", sub:"When you're done", url:"https://stp-muskego.github.io/game-launcher/", icon:"games" }
   ];
 
   const ICONS = {
@@ -565,7 +565,7 @@
      If a photo is missing or BG_COUNT is 0, the page just shows its
      clean light background -- it never looks broken.
      ------------------------------------------------------------ */
-  const BG_COUNT = 115;          // <-- set to how many photos are in bg/
+  const BG_COUNT = 0;          // <-- set to how many photos are in bg/
   const BG_EXT   = "jpg";      // change to "png" if yours are PNGs
 
   /* The two plain choices. Tweak these hex values if you want a
@@ -716,11 +716,12 @@
   })();
 
   /* ---- weather -------------------------------------------------
-     Open-Meteo: no API key, no account, free for educational use.
-     Coordinates below are Muskego, WI -- change them if you ever
-     want a different location. Results are cached for 30 minutes so
-     a student opening 40 tabs a day only triggers a couple of calls. */
+     Open-Meteo: no API key, free for educational use. Coordinates
+     below are Muskego, WI. Cached for 10 minutes so a student
+     opening many tabs a day only triggers a few calls -- if you ever
+     want it fresher, lower CACHE_MINUTES. */
   const WX_LAT = 42.9111, WX_LON = -88.1287;
+  const CACHE_MINUTES = 10;
 
   (function(){
     const CODES = {
@@ -734,30 +735,46 @@
       82:["\u{1F326}\uFE0F","Heavy showers"], 85:["\u{1F328}\uFE0F","Snow showers"], 86:["\u{1F328}\uFE0F","Snow showers"],
       95:["\u26C8\uFE0F","Thunderstorm"], 96:["\u26C8\uFE0F","Thunderstorm"], 99:["\u26C8\uFE0F","Thunderstorm"]
     };
-    function show(temp, code, hi, lo){
-      const c = CODES[code] || ["\u{1F321}\uFE0F",""];
+
+    function show(d){
+      const c = CODES[d.code] || ["\u{1F321}\uFE0F",""];
       document.getElementById("wxIco").textContent = c[0];
-      document.getElementById("wxT").textContent = Math.round(temp)+"\u00B0F";
-      document.getElementById("wxD").textContent =
-        c[1] + (hi!=null ? "  \u00B7  H "+Math.round(hi)+"\u00B0 L "+Math.round(lo)+"\u00B0" : "");
+      document.getElementById("wxT").textContent = Math.round(d.temp)+"\u00B0F";
+
+      /* line 2: condition, feels-like when it differs, H/L, rain chance */
+      const bits = [c[1]];
+      if (d.feels != null && Math.abs(d.feels - d.temp) >= 3)
+        bits.push("Feels "+Math.round(d.feels)+"\u00B0");
+      if (d.hi != null) bits.push("H "+Math.round(d.hi)+"\u00B0 L "+Math.round(d.lo)+"\u00B0");
+      if (d.rain != null && d.rain >= 20) bits.push(d.rain+"% rain");
+      document.getElementById("wxD").textContent = bits.join("  \u00B7  ");
+
       document.getElementById("wxBlock").classList.add("on");
       document.getElementById("wxSep").classList.add("on");
     }
-    // try cache first (works once hosted; harmless if storage is unavailable)
+
     try{
       const c = JSON.parse(localStorage.getItem("wx")||"null");
-      if (c && Date.now()-c.at < 1800000){ show(c.t,c.c,c.hi,c.lo); return; }
+      if (c && Date.now()-c.at < CACHE_MINUTES*60000){ show(c); return; }
     }catch(e){}
 
     const url = "https://api.open-meteo.com/v1/forecast?latitude="+WX_LAT+"&longitude="+WX_LON+
-                "&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min"+
+                "&current=temperature_2m,apparent_temperature,weather_code,precipitation_probability"+
+                "&daily=temperature_2m_max,temperature_2m_min"+
                 "&temperature_unit=fahrenheit&timezone=auto&forecast_days=1";
-    fetch(url).then(r=>r.json()).then(d=>{
-      const t=d.current.temperature_2m, c=d.current.weather_code;
-      const hi=d.daily.temperature_2m_max[0], lo=d.daily.temperature_2m_min[0];
-      show(t,c,hi,lo);
-      try{ localStorage.setItem("wx", JSON.stringify({t:t,c:c,hi:hi,lo:lo,at:Date.now()})); }catch(e){}
-    }).catch(()=>{ /* offline: widget simply stays hidden */ });
+    fetch(url).then(r=>r.json()).then(j=>{
+      const d = {
+        temp: j.current.temperature_2m,
+        feels: j.current.apparent_temperature,
+        code: j.current.weather_code,
+        rain: j.current.precipitation_probability,
+        hi: j.daily.temperature_2m_max[0],
+        lo: j.daily.temperature_2m_min[0],
+        at: Date.now()
+      };
+      show(d);
+      try{ localStorage.setItem("wx", JSON.stringify(d)); }catch(e){}
+    }).catch(()=>{ /* offline or blocked: time and date still show */ });
   })();
 
   /* ---- voice search --------------------------------------------
@@ -871,6 +888,20 @@
         }
       }
     }).catch(()=>{ /* unreachable Sheet: strip stays hidden */ });
+  })();
+
+  /* ---- Images: image-searches whatever is in the box ----
+     Clicking with an empty box just focuses the box instead of
+     dumping students on Google's generic image-suggestions page. */
+  (function(){
+    const link = document.getElementById("imgLink");
+    const input = document.getElementById("q");
+    link.addEventListener("click", e => {
+      const v = input.value.trim();
+      if (!v){ e.preventDefault(); input.focus(); return; }
+      e.preventDefault();
+      window.location.href = "https://www.google.com/search?tbm=isch&safe=active&q="+encodeURIComponent(v);
+    });
   })();
 
   /* ---- press "/" to jump to the search box ---- */
